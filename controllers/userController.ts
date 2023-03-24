@@ -1,4 +1,6 @@
 const User = require("../model/user");
+const Product = require ('../model/product');
+
 
 export const postUser = async (req,res)=>{
     const user = new User({
@@ -31,13 +33,14 @@ export const put = async(req,res) => {
         user.phoneNumber=req.body.phoneNumber || user.phoneNumber;
         user.accountType=req.body.accountType || user.accountType;
         await user.save();
-        res.status(201).json(user);
+        res.status(200).json(user);
 
 }
 
 export const deleteUser = async(req,res) => {
     try{
-    await User.remove({_id: req.params.userId})
+    await User.remove({_id: req.params.userId});
+    await Product.remove({created_by:req.params.userId})
     res.status(200).json({Message:"Deleted"})
     }
     catch(error){

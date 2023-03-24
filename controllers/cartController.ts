@@ -1,4 +1,5 @@
 const Cart = require('../model/cart')
+const Product = require ('../model/product');
 const ProductDetails = require('../controllers/productController')
 
 const addItem = async payload => {
@@ -22,9 +23,9 @@ export const addItemtoCart = async (req,res) => {
     const quantity = Number.parseInt(req.body.quantity);
     try{
         let cart = await currentCart(userId);
-        let productDetails = await ProductDetails.productById(productId);
+        let productDetails = await Product.findById(productId);
         if(!productDetails){
-            return res.status(500).json({
+            return res.status(400).json({
                 type:"Not Found",
                 msg:"invalid request",
                 product:productDetails,
@@ -123,7 +124,7 @@ export const getCart = async (req, res) => {
             })
         }
         res.status(200).json({
-            status: true,
+            status: "success",
             data: cart
         })
     } catch (err) {

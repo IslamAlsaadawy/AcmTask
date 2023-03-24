@@ -1,8 +1,8 @@
 import { deleteUser, get, put } from "../controllers/userController";
 
-const {Router} = require('express');
-const {postUser} = require('../controllers/userController')
-
+// const {Router} = require('express');
+import {Router} from "express";
+import { postUser } from "../controllers/userController";
 
 const userRouter = Router();
 

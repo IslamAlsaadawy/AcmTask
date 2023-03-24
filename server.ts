@@ -1,16 +1,23 @@
-const express = require('express');
-const app = express();
-const mongoose = require('mongoose')
-const multer = require('multer');
+// const express = require('express');
+import express from "express";
+// const mongoose = require('mongoose')
+import mongoose from "mongoose";
+import multer from "multer";
+require('dotenv').config();
+
+
+const app = express()
 const upload = multer({dest:'uploads/'});
 
-const uri = "mongodb+srv://IslamAlsaadawy:Islam123.@cluster0.vwqflpr.mongodb.net/test";
+const uri =process.env.MONGOURI ;
 async function connect(){
     try{
-        await mongoose.connect(uri);
+        await mongoose.connect(uri||"test");
         console.log("Connected to MongoDb");
     }
     catch(error){
+        console.log(error);
+        
         console.error("error")
     }
 };

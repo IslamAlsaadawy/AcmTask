@@ -4,12 +4,11 @@ import { uploadImage } from "../services/imgUploadService";
 
 const Product = require ('../model/product');
 const multer = require('multer');
+const User = require("../model/user");
 const upload = multer({dest:'uploads/'});
 
 export const postProduct = async (req,res) => {
-    //hawlt ashghlo b cloud 
-    // console.log(req.file)
-    // const img = uploadImage(req.file.path)
+    const userId = req.body.created_by;
     const product = new Product({
         name : req.body.name,
         // imgpath : img,
@@ -22,49 +21,51 @@ export const postProduct = async (req,res) => {
         created_by :req.body.created_by})
 
         try{
+            const user = await User.find({_id:userId});
+            
+            if(!user[0] || user[0].accountType !="seller"){
+                res.status(400).json({messsage: "Not a seller"});
+            }
             const newProduct = await product.save();
            res.status(201).json(newProduct)
 
         }
         catch(err){
-            res.status(500)
+             console.log(err);
+            
         }
         
     }
 
-    export const productById = async (id) =>{
-        const product = await Product.findById(id);
-        return product;
-    }
+
     export const findProductById = async (req,res) =>{
         const product = await Product.findById(req.params.productId)
         res.status(200).json(product);
     }
 
     export const getProduct= async(req,res)=> {
-    const{category, orderBy} = req.query;
+    const{category, orderBy,sellerId} = req.query;
     
     const filter = {
         category:String,
         orderBy:String,
+        sellerId:String
 
-        
-    
     }
     let sort = {};
     if(category){
         filter.category = category;
     }
+    if(sellerId){
+        filter.sellerId = sellerId;
+    }
     if(orderBy){
      sort = {orderBy : -1}
     }
-    // if(sellerId){
-    //     filter._id = sellerId
-    // }
-   
+
     
 
-    let products = await Product.find(filter).sort(sort);
+    let products = await Product.find({category:category, created_by:sellerId}).sort(sort);
     const checkProducts = Object.values(products)
     console.log(checkProducts);
 
@@ -73,20 +74,9 @@ export const postProduct = async (req,res) => {
     }
 
 
-    // if(filter.name == null){
-    //      products = await Product.find(filter)
-
-    // }
-    // else{
-    //      products = await Product.find()
-
-    // }
-    
     res.status(200).json(products)
 
-        // const products = await Product.find();
-        // res.status(200).json(products);
-    
+      
     }
     
-    module.exports = {postProduct,productById,findProductById,getProduct}
+    module.exports = {postProduct,findProductById,getProduct}
